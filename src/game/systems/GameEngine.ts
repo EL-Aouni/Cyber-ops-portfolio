@@ -72,6 +72,7 @@ export class GameEngine {
   }
 
   update(deltaTime: number, input: InputState) {
+    // Don't update game logic when paused or panel is open
     if (this.gameState.isPaused || this.gameState.activePanel) {
       return;
     }
