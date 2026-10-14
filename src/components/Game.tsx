@@ -76,10 +76,20 @@ const Game = () => {
           const currentState = engineRef.current.getState();
           const inputState = inputRef.current.getInputState();
 
-          // Handle pause toggle
+          // Handle escape key for pause menu OR closing panels
           if (inputState.escape) {
-            engineRef.current.togglePause();
+            if (currentState.activePanel) {
+              engineRef.current.closePanel();
+            } else {
+              engineRef.current.togglePause();
+            }
             inputRef.current.resetEscape();
+          }
+
+          // Handle interact/close for panels (E, Space, Enter)
+          if (inputState.interact && currentState.activePanel) {
+            engineRef.current.closePanel();
+            inputRef.current.resetInteract();
           }
 
           // Update game

@@ -28,9 +28,10 @@ export interface InteractiveObject {
   id: string;
   position: Vector2;
   size: Vector2;
-  type: 'station' | 'door' | 'terminal' | 'npc' | 'document';
+  type: 'station' | 'door' | 'terminal' | 'npc' | 'document' | 'desk';
   title: string;
   description?: string;
+  label?: string;
   interactionRadius: number;
   isInteractable: boolean;
   roomId?: string;
@@ -43,6 +44,7 @@ export interface Room {
   name: string;
   description: string;
   bounds: Rectangle;
+  walls?: CollisionBox[];
   collisionBoxes: CollisionBox[];
   objects: InteractiveObject[];
   backgroundColor: string;
