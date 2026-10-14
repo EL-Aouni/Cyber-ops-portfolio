@@ -1,0 +1,73 @@
+.mobile-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.joystick-container {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  pointer-events: all;
+}
+
+.joystick-base {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, rgba(0, 255, 255, 0.05) 100%);
+  border: 2px solid rgba(0, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.joystick-stick {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #00ffff 0%, #00aaaa 100%);
+  border: 2px solid #00ffff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  transition: transform 0.1s ease;
+}
+
+.interact-button {
+  position: absolute;
+  bottom: 40px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #00ffaa 0%, #00aa88 100%);
+  border: 3px solid #00ffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+  pointer-events: all;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.interact-button:active {
+  transform: scale(0.9);
+  box-shadow: 0 0 30px rgba(0, 255, 170, 0.8);
+}
+
+@media (min-width: 769px) {
+  .mobile-controls {
+    display: none;
+  }
+}

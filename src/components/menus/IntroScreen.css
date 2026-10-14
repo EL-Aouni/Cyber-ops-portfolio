@@ -1,0 +1,138 @@
+.intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 14, 26, 0.98);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-family: 'Courier New', monospace;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.intro-content {
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  text-align: center;
+}
+
+.intro-badge {
+  display: inline-block;
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  padding: 4px 12px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.intro-title {
+  font-size: 48px;
+  color: #00ffff;
+  margin: 0;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.intro-subtitle {
+  font-size: 14px;
+  color: #00ff88;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+
+.intro-description {
+  color: #88ffff;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.intro-description strong {
+  color: #ffffff;
+}
+
+.intro-instructions {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 4px;
+  border: 1px solid #1a2a3a;
+  margin-bottom: 30px;
+}
+
+.intro-instructions h3 {
+  color: #00ffff;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.instruction-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.instruction-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.instruction-item kbd {
+  background: rgba(0, 255, 255, 0.2);
+  color: #00ffff;
+  padding: 4px 8px;
+  border: 1px solid #00ffff;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.start-button {
+  position: relative;
+  background: linear-gradient(45deg, #00ffff, #00ff88);
+  color: #000;
+  border: none;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+}
+
+.intro-footer {
+  margin-top: 30px;
+  font-size: 11px;
+  color: #557788;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
