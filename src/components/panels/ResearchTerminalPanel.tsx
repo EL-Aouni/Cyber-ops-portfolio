@@ -1,106 +1,159 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { soundFX } from '../../game/utils/sound';
 import './PanelContent.css';
 
 interface PanelProps {
   onClose: () => void;
+  onMissionComplete?: (missionId: string) => void;
 }
 
-const ResearchTerminalPanel: React.FC<PanelProps> = () => {
+interface DefenseNode {
+  id: string;
+  name: string;
+  role: string;
+  policy: string;
+  active: boolean;
+  impact: string;
+}
+
+const ResearchTerminalPanel: React.FC<PanelProps> = ({ onMissionComplete }) => {
+  const [nodes, setNodes] = useState<DefenseNode[]>([
+    {
+      id: 'dc01',
+      name: 'DC01.CORP.LOCAL',
+      role: 'Primary Domain Controller',
+      policy: 'Enforce Kerberos Armoring (FAST) & Protected Users Group',
+      active: false,
+      impact: 'Mitigates Pass-the-Hash, Kerberoasting, and offline credential cracking.',
+    },
+    {
+      id: 'laps',
+      name: 'WORKSTATION FLEET',
+      role: 'Active Directory Endpoints',
+      policy: 'Deploy Windows LAPS (Local Admin Password Solution)',
+      active: false,
+      impact: 'Eliminates shared local administrator passwords across enterprise workstations.',
+    },
+    {
+      id: 'firewall',
+      name: 'INTERNAL FIREWALL',
+      role: 'Network Segmentation Gateway',
+      policy: 'Block Lateral SMB (445) & RPC (135) between Workstation VLANs',
+      active: false,
+      impact: 'Confines adversaries to initial breach point, blocking worm propagation.',
+    },
+    {
+      id: 'sysmon',
+      name: 'SYSMON SENSOR GRID',
+      role: 'Endpoint Telemetry',
+      policy: 'Enable Event ID 10 (LSASS Memory Read) & Script Block Logging',
+      active: false,
+      impact: 'Alerts SOC immediately upon Mimikatz LSASS memory dumping attempts.',
+    },
+  ]);
+
+  const [completed, setCompleted] = useState(false);
+
+  const togglePolicy = (id: string) => {
+    soundFX.playInteract();
+
+    const updated = nodes.map((n) => {
+      if (n.id === id) {
+        return { ...n, active: !n.active };
+      }
+      return n;
+    });
+
+    setNodes(updated);
+
+    const allActive = updated.every((n) => n.active);
+    if (allActive && !completed) {
+      setCompleted(true);
+      soundFX.playHackSuccess();
+      if (onMissionComplete) {
+        onMissionComplete('mission-4');
+      }
+    }
+  };
+
+  const activeCount = nodes.filter((n) => n.active).length;
+
   return (
     <div className="terminal-panel">
       <div className="terminal-header">
-        <span className="terminal-prompt">SECURITY RESEARCH LAB</span>
-        <span className="terminal-status">● SYSTEMS ONLINE</span>
+        <span className="terminal-prompt">ACTIVE DIRECTORY HARDENING MATRIX</span>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <span className="terminal-status" style={{ color: activeCount === 4 ? '#00ff88' : '#ffff00' }}>
+            DEFENSE COVERS: {activeCount}/4 POLICIES
+          </span>
+          <span className="terminal-status">● DOMAIN: CORP.LOCAL</span>
+        </div>
       </div>
 
       <div className="terminal-content">
-        <h2>Cybersecurity Research & Lab Environments</h2>
+        <h2>Active Directory Defense & Research Lab</h2>
+        <p>
+          Simulate enterprise identity architecture hardening. An adversary is attempting lateral movement
+          using Pass-the-Hash and LSASS memory extraction. Activate defense policies across nodes to establish
+          Zero-Trust isolation.
+        </p>
 
-        <div className="lab-environment">
-          <h3>Active Directory Lab Environment</h3>
-          <p>
-            Comprehensive enterprise security lab featuring Windows Server infrastructure,
-            Active Directory domain services, and security monitoring solutions.
-          </p>
+        {/* Visual Node Diagram */}
+        <div className="ad-topology-grid">
+          {nodes.map((node) => (
+            <div
+              key={node.id}
+              className={`ad-node-card ${node.active ? 'node-secured' : 'node-vulnerable'}`}
+              onClick={() => togglePolicy(node.id)}
+            >
+              <div className="node-card-header">
+                <span className="node-status-dot">{node.active ? '🛡️' : '⚠️'}</span>
+                <span className="node-title">{node.name}</span>
+                <span className={`node-badge ${node.active ? 'badge-secured' : 'badge-vuln'}`}>
+                  {node.active ? 'SECURED' : 'VULNERABLE'}
+                </span>
+              </div>
 
-          <div className="infrastructure-diagram">
-            <div className="infra-section">
-              <h4>Domain Controllers</h4>
+              <div className="node-role">{node.role}</div>
+              <div className="node-policy">
+                <strong>Policy:</strong> {node.policy}
+              </div>
+              <div className="node-impact">
+                <em>Effect:</em> {node.impact}
+              </div>
+
+              <button className={`node-toggle-btn ${node.active ? 'btn-active' : ''}`}>
+                {node.active ? '✓ POLICY ENFORCED' : '+ DEPLOY DEFENSIVE POLICY'}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {completed && (
+          <div className="triage-results" style={{ marginTop: '24px' }}>
+            <h2>🎉 ENTERPRISE DOMAIN HARDENING COMPLETE!</h2>
+            <div className="final-score-display">
+              ACTIVE DIRECTORY FOREST SECURED
+            </div>
+            <p>
+              By establishing LAPS, Kerberos FAST armoring, network isolation, and Sysmon LSASS monitoring,
+              you eliminated 99% of lateral movement attack paths in the enterprise environment!
+            </p>
+
+            <div className="siem-projects">
+              <h3>Mohammed's Enterprise Infrastructure & AD Projects:</h3>
               <ul>
-                <li>Windows Server 2022 - Primary DC</li>
-                <li>Active Directory Domain Services</li>
-                <li>Group Policy Management</li>
-                <li>DNS & DHCP Services</li>
+                <li><strong>Enterprise AD Lab:</strong> Deployed Windows Server 2022 Forest with multi-domain trusts, DNS, and DHCP.</li>
+                <li><strong>Group Policy Architecture:</strong> Created CIS Benchmark GPO templates for automated server baseline security.</li>
+                <li><strong>Sysmon Threat Hunting:</strong> Configured centralized telemetry forwarding to Wazuh SIEM for rapid credential theft discovery.</li>
               </ul>
             </div>
 
-            <div className="infra-section">
-              <h4>Security Monitoring</h4>
-              <ul>
-                <li>Wazuh Agent Deployment</li>
-                <li>Windows Event Log Collection</li>
-                <li>Sysmon for Enhanced Logging</li>
-                <li>Centralized Log Aggregation</li>
-              </ul>
-            </div>
-
-            <div className="infra-section">
-              <h4>Testing Infrastructure</h4>
-              <ul>
-                <li>Exchange Server Configuration</li>
-                <li>File Server with Audit Policies</li>
-                <li>Workstation Fleet Management</li>
-                <li>Network Segmentation</li>
-              </ul>
+            <div className="mission-complete">
+              <span className="checkmark">✓</span> Mission 4 Complete: Threat Intelligence & AD Defense Mastery (+250 XP)!
             </div>
           </div>
-        </div>
-
-        <div className="research-projects">
-          <h3>Research Focus Areas</h3>
-
-          <div className="research-card">
-            <h4>Security Event Correlation</h4>
-            <p>
-              Developing advanced correlation rules for detecting lateral movement,
-              privilege escalation, and suspicious authentication patterns in Active Directory.
-            </p>
-          </div>
-
-          <div className="research-card">
-            <h4>Threat Hunting Methodologies</h4>
-            <p>
-              Proactive threat hunting using behavioral analytics, anomaly detection,
-              and threat intelligence integration across enterprise environments.
-            </p>
-          </div>
-
-          <div className="research-card">
-            <h4>Security Automation</h4>
-            <p>
-              Building automated response workflows for common security incidents,
-              reducing mean time to respond (MTTR) through orchestration.
-            </p>
-          </div>
-        </div>
-
-        <div className="lab-tech">
-          <h3>Lab Technologies</h3>
-          <div className="tech-list">
-            <span className="tech-tag">Windows Server</span>
-            <span className="tech-tag">Active Directory</span>
-            <span className="tech-tag">Exchange Server</span>
-            <span className="tech-tag">Wazuh</span>
-            <span className="tech-tag">Sysmon</span>
-            <span className="tech-tag">PowerShell</span>
-            <span className="tech-tag">VirtualBox</span>
-            <span className="tech-tag">Network Packet Analysis</span>
-          </div>
-        </div>
-
-        <div className="mission-complete">
-          <span className="checkmark">✓</span> Research Lab Accessed: +250 XP
-        </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { GameEngine } from '../game/systems/GameEngine';
 import { EnhancedRenderer } from '../game/systems/EnhancedRenderer';
 import { InputManager } from '../game/utils/input';
+import { soundFX } from '../game/utils/sound';
 import type { GameState } from '../types/game';
 import HUD from './hud/HUD';
 import PauseMenu from './menus/PauseMenu';
@@ -86,23 +87,21 @@ const Game = () => {
             inputRef.current.resetEscape();
           }
 
-          // Handle interact/close for panels (E, Space, Enter)
-          if (inputState.interact && currentState.activePanel) {
-            engineRef.current.closePanel();
-            inputRef.current.resetInteract();
+          // If panel is active, do not allow game controls to intercept or close automatically
+          if (!currentState.activePanel) {
+            // Update game
+            engineRef.current.update(deltaTime, inputState);
           }
 
-          // Update game
-          engineRef.current.update(deltaTime, inputState);
-
-          // Render (always render even if paused)
+          // Render (always render even if paused or panel open)
           const currentRoom = engineRef.current.getCurrentRoom();
           if (currentRoom) {
             rendererRef.current.render(currentState, currentRoom);
           }
 
-          // Reset one-time inputs AFTER everything
+          // Reset one-time inputs AFTER update
           inputRef.current.resetInteract();
+          inputRef.current.resetAttack();
 
           animationFrameRef.current = requestAnimationFrame(gameLoop);
         };
@@ -132,6 +131,8 @@ const Game = () => {
 
   const handleStartGame = () => {
     setShowIntro(false);
+    // Initialize audio context and start retro synthwave soundtrack
+    soundFX.startMusic();
   };
 
   const handleRestart = () => {
@@ -147,6 +148,18 @@ const Game = () => {
     }
   };
 
+  const handleMissionComplete = (missionId: string) => {
+    if (engineRef.current) {
+      engineRef.current.completeMission(missionId);
+    }
+  };
+
+  const handleDismissLore = () => {
+    if (engineRef.current) {
+      engineRef.current.dismissLore();
+    }
+  };
+
   const handleJoystick = (direction: { x: number; y: number } | null) => {
     if (inputRef.current) {
       inputRef.current.setMobileJoystick(direction);
@@ -156,6 +169,12 @@ const Game = () => {
   const handleMobileInteract = (pressed: boolean) => {
     if (inputRef.current) {
       inputRef.current.setMobileInteract(pressed);
+    }
+  };
+
+  const handleMobileAttack = (pressed: boolean) => {
+    if (inputRef.current) {
+      inputRef.current.setMobileAttack(pressed);
     }
   };
 
@@ -236,7 +255,9 @@ const Game = () => {
           <IntroScreen onStart={handleStartGame} />
         )}
 
-        {gameState && <HUD gameState={gameState} />}
+        {gameState && (
+          <HUD gameState={gameState} onDismissLore={handleDismissLore} />
+        )}
 
         {gameState?.isPaused && (
           <PauseMenu onRestart={handleRestart} />
@@ -247,6 +268,7 @@ const Game = () => {
             panelId={gameState.activePanel}
             onClose={handleClosePanel}
             gameState={gameState}
+            onMissionComplete={handleMissionComplete}
           />
         )}
 
@@ -254,6 +276,7 @@ const Game = () => {
           <MobileControls
             onJoystick={handleJoystick}
             onInteract={handleMobileInteract}
+            onAttack={handleMobileAttack}
           />
         )}
       </div>

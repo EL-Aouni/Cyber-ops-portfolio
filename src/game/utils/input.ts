@@ -7,10 +7,12 @@ export class InputManager {
     left: false,
     right: false,
     interact: false,
+    attack: false,
     escape: false,
     mobile: {
       joystick: null,
       interactPressed: false,
+      attackPressed: false,
     },
   };
 
@@ -29,7 +31,9 @@ export class InputManager {
     ArrowRight: 'right',
     e: 'interact',
     E: 'interact',
-    ' ': 'interact',
+    f: 'attack',
+    F: 'attack',
+    ' ': 'attack',
     Enter: 'interact',
     Escape: 'escape',
   };
@@ -38,19 +42,40 @@ export class InputManager {
     this.setupKeyboardListeners();
   }
 
+  private isInputElement(target: EventTarget | null): boolean {
+    if (!target) return false;
+    const el = target as HTMLElement;
+    const tagName = el.tagName?.toLowerCase();
+    return tagName === 'input' || tagName === 'textarea' || el.isContentEditable;
+  }
+
   private setupKeyboardListeners() {
     window.addEventListener('keydown', (e) => {
+      // If typing inside an input field or textarea, let it handle the typing!
+      if (this.isInputElement(e.target)) {
+        if (e.key === 'Escape') {
+          this.inputState.escape = true;
+        }
+        return;
+      }
+
       const action = this.keyMap[e.key];
       if (action) {
-        e.preventDefault();
+        // Prevent scrolling for arrows, space
+        if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+        }
         this.inputState[action] = true;
       }
     });
 
     window.addEventListener('keyup', (e) => {
+      if (this.isInputElement(e.target)) {
+        return;
+      }
+
       const action = this.keyMap[e.key];
       if (action) {
-        e.preventDefault();
         this.inputState[action] = false;
       }
     });
@@ -72,10 +97,23 @@ export class InputManager {
     }
   }
 
+  setMobileAttack(pressed: boolean) {
+    if (this.inputState.mobile) {
+      this.inputState.mobile.attackPressed = pressed;
+    }
+  }
+
   resetInteract() {
     this.inputState.interact = false;
     if (this.inputState.mobile) {
       this.inputState.mobile.interactPressed = false;
+    }
+  }
+
+  resetAttack() {
+    this.inputState.attack = false;
+    if (this.inputState.mobile) {
+      this.inputState.mobile.attackPressed = false;
     }
   }
 

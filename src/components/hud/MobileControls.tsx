@@ -5,9 +5,10 @@ import './MobileControls.css';
 interface MobileControlsProps {
   onJoystick: (direction: { x: number; y: number } | null) => void;
   onInteract: (pressed: boolean) => void;
+  onAttack?: (pressed: boolean) => void;
 }
 
-const MobileControls = ({ onJoystick, onInteract }: MobileControlsProps) => {
+const MobileControls = ({ onJoystick, onInteract, onAttack }: MobileControlsProps) => {
   const joystickRef = useRef<HTMLDivElement>(null);
   const [joystickActive, setJoystickActive] = useState(false);
   const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
@@ -61,12 +62,23 @@ const MobileControls = ({ onJoystick, onInteract }: MobileControlsProps) => {
     onInteract(false);
   };
 
+  const handleAttackStart = (e: TouchEvent) => {
+    e.preventDefault();
+    if (onAttack) onAttack(true);
+  };
+
+  const handleAttackEnd = (e: TouchEvent) => {
+    e.preventDefault();
+    if (onAttack) onAttack(false);
+  };
+
   useEffect(() => {
     return () => {
       onJoystick(null);
       onInteract(false);
+      if (onAttack) onAttack(false);
     };
-  }, []);
+  }, [onJoystick, onInteract, onAttack]);
 
   return (
     <div className="mobile-controls">
@@ -88,14 +100,26 @@ const MobileControls = ({ onJoystick, onInteract }: MobileControlsProps) => {
         </div>
       </div>
 
-      {/* Interact Button */}
-      <button
-        className="interact-button"
-        onTouchStart={handleInteractStart}
-        onTouchEnd={handleInteractEnd}
-      >
-        <span>E</span>
-      </button>
+      {/* Action Buttons */}
+      <div className="mobile-buttons-container">
+        {/* EMP Blast Button */}
+        <button
+          className="attack-button"
+          onTouchStart={handleAttackStart}
+          onTouchEnd={handleAttackEnd}
+        >
+          <span>EMP</span>
+        </button>
+
+        {/* Interact Button */}
+        <button
+          className="interact-button"
+          onTouchStart={handleInteractStart}
+          onTouchEnd={handleInteractEnd}
+        >
+          <span>E</span>
+        </button>
+      </div>
     </div>
   );
 };

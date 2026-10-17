@@ -12,23 +12,35 @@ interface PanelOverlayProps {
   panelId: string;
   onClose: () => void;
   gameState: GameState;
+  onMissionComplete?: (missionId: string) => void;
 }
 
-const PanelOverlay: React.FC<PanelOverlayProps> = ({ panelId, onClose, gameState }) => {
+const PanelOverlay: React.FC<PanelOverlayProps> = ({
+  panelId,
+  onClose,
+  gameState,
+  onMissionComplete,
+}) => {
   const renderPanelContent = () => {
     switch (panelId) {
       case 'soc-terminal':
-        return <SOCTerminalPanel onClose={onClose} />;
+        return <SOCTerminalPanel onClose={onClose} onMissionComplete={onMissionComplete} />;
       case 'siem-station':
-        return <SIEMStationPanel onClose={onClose} />;
+        return <SIEMStationPanel onClose={onClose} onMissionComplete={onMissionComplete} />;
       case 'recon-terminal':
-        return <ReconTerminalPanel onClose={onClose} />;
+        return <ReconTerminalPanel onClose={onClose} onMissionComplete={onMissionComplete} />;
       case 'research-terminal':
-        return <ResearchTerminalPanel onClose={onClose} />;
+        return <ResearchTerminalPanel onClose={onClose} onMissionComplete={onMissionComplete} />;
       case 'mission-control':
-        return <MissionControlPanel onClose={onClose} gameState={gameState} />;
+        return (
+          <MissionControlPanel
+            onClose={onClose}
+            gameState={gameState}
+            onMissionComplete={onMissionComplete}
+          />
+        );
       case 'recruitment-desk':
-        return <RecruitmentDeskPanel onClose={onClose} />;
+        return <RecruitmentDeskPanel onClose={onClose} onMissionComplete={onMissionComplete} />;
       default:
         return (
           <div className="panel-default">
